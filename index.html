@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>MKThink Strategy Tool</title>
+
+<p>
+  <label for="nTop"
+         style="display: inline-block; width: 240px; text-align: right">
+         TOP = <span id="nTop-value">…</span>
+  </label>
+  <input type="range" min="0" max="100" id="nTop">
+</p>
+
+<p>
+  <label for="nBottom"
+         style="display: inline-block; width: 240px; text-align: right">
+         BOTTOM = <span id="nBottom-value">…</span>
+  </label>
+  <input type="range" min="0" max="100" id="nBottom">
+</p>
+
+<p>
+  <label for="nRight"
+         style="display: inline-block; width: 240px; text-align: right">
+         RIGHT = <span id="nRight-value">…</span>
+  </label>
+  <input type="range" min="0" max="100" id="nRight">
+</p>
+
+<p>
+  <label for="nLeft"
+         style="display: inline-block; width: 240px; text-align: right">
+         LEFT = <span id="nLeft-value">…</span>
+  </label>
+  <input type="range" min="0" max="100" id="nLeft">
+</p>
+
+<p style="display: inline-block; width: 240px; text-align: right">
+  WIDTH = <span id="width">…</span>
+  HEIGHT = <span id="height">…</span>
+</p>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+// initial parameters for canvas and rectangle
+var width = 2000;
+var height = 1000;
+
+var posX = 300;
+var posY = 300;
+
+var rectWidth = 100;
+var rectHeight = 100;
+
+// create svg canvas
+var holder = d3.select("body")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+// draw a rectangle
+holder.append("rect")
+    .attr("x", posX)
+    .attr("y", posY)
+    .style("fill", "none")
+    .style("stroke", "blue")
+    .attr("height", rectWidth)
+    .attr("width", rectHeight);
+
+// read a change in the top input
+d3.select("#nTop").on("input", function() {
+  updateHeight(+this.value, Number(d3.select("#nBottom").property("value")));
+});
+
+// read a change in the bottom input
+d3.select("#nBottom").on("input", function() {
+  updateHeight(Number(d3.select("#nTop").property("value")), +this.value);
+});
+
+// read a change in the width input
+d3.select("#nRight").on("input", function() {
+  updateWidth(+this.value, Number(d3.select("#nLeft").property("value")));
+});
+
+// read a change in the width input
+d3.select("#nLeft").on("input", function() {
+  updateWidth(Number(d3.select("#nRight").property("value")), +this.value);
+});
+
+// update the values
+updateHeight(0, 0);
+updateWidth(0, 0);
+
+
+// Update the height attributes
+function updateHeight(nTop, nBottom) {
+
+  // calculate new height
+  var newHeight = rectHeight + nTop + nBottom;
+  var colorRatio = newHeight * Number(d3.select("rect").attr("width"))/90000;
+
+  // adjust the text on the range slider
+  d3.select("#nTop-value").text(nTop);
+  d3.select("#nTop").property("value", nTop);
+
+  d3.select("#nBottom-value").text(nBottom);
+  d3.select("#nBottom").property("value", nBottom);
+
+  d3.select("#height").text(newHeight);
+
+  // update the rectangle
+  holder.selectAll("rect")
+    .attr("y", posY-(nTop))
+    .attr("height", newHeight)
+    .style("fill", d3.hsl(colorRatio * 120, 0.8, 0.8));
+}
+
+
+// Update the width attributes
+function updateWidth(nRight, nLeft) {
+
+  // calculate new width
+  var newWidth = rectWidth + nRight + nLeft;
+  var colorRatio = newWidth * Number(d3.select("rect").attr("height"))/90000;
+
+  console.log(colorRatio);
+
+  // adjust the text on the range slider
+  d3.select("#nRight-value").text(nRight);
+  d3.select("#nRight").property("value", nRight);
+
+  d3.select("#nLeft-value").text(nLeft);
+  d3.select("#nLeft").property("value", nLeft);
+
+  d3.select("#width").text(newWidth);
+
+  // update the rectangle right edge
+  holder.selectAll("rect")
+    .attr("x", posX-(nLeft))
+    .attr("width", newWidth)
+    .style("fill", d3.hsl(colorRatio*120, 0.8, 0.8));
+}
+
+</script>
