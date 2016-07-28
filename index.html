@@ -39,9 +39,18 @@
   HEIGHT = <span id="height">…</span>
 </p>
 
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script>
+<form method="post">
+        <select id="ruleset">
+                <option value="0">all free</option>
+                <option value="1">constrain opposite</option>
+                <option value="2">constrain adjacent</option>
+                <option value="3">limited area</option>
+        </select>
+</form>
 
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
 // initial parameters for canvas and rectangle
 var width = 2000;
 var height = 1000;
@@ -88,8 +97,8 @@ d3.select("#nLeft").on("input", function() {
 });
 
 // update the values
-updateHeight(0, 0);
-updateWidth(0, 0);
+updateHeight(50, 0);
+updateWidth(0, 50);
 
 
 // Update the height attributes
@@ -140,5 +149,8 @@ function updateWidth(nRight, nLeft) {
     .attr("width", newWidth)
     .style("fill", d3.hsl(colorRatio*120, 1, 0.8));
 }
+
+var sel=document.getElementById('Ruleset');
+console.log(sel.options[sel.selectedIndex].value)
 
 </script>
