@@ -1,156 +1,111 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<title>MKThink Strategy Tool</title>
+<head>
+  <meta charset="utf-8">
+  <title>MKThink Strategy Tool</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,700" rel="stylesheet">
+  <style>
+      body {
+          font-family: 'Roboto Condensed', sans-serif;
+          font-size: 14px;
+          font-weight: 300;
+      }
+
+      span {
+        font-weight:700;
+      }
+
+      select {
+        font-family: 'Roboto Condensed', sans-serif;
+        font-style: italic;
+        font-size: 14px;
+        font-weight: 300;
+      }
+
+      #fTargetArea {
+        font-family: 'Roboto Condensed', sans-serif;
+        font-style: italic;
+        font-size: 14px;
+        font-weight: 300;
+        text-align: right;
+      }
+
+      input {
+        font-family: 'Roboto Condensed', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .axis path,
+      .axis line {
+          fill: none;
+          stroke: black;
+          shape-rendering: crispEdges;
+      }
+
+      .axis text {
+          font-family: sans-serif;
+          font-size: 11px;
+      }
+  </style>
+</head>
 
 <p>
-  <label for="nTop"
+  <label for="sTop"
          style="display: inline-block; width: 240px; text-align: right">
-         TOP = <span id="nTop-value">…</span>
+         hours per week = <span id="sTop-value">…</span>
   </label>
-  <input type="range" min="0" max="100" id="nTop">
+  <input type="range" min="1" max="168" step="0.1" id="sTop">
 </p>
 
 <p>
-  <label for="nBottom"
+  <label for="sBottom"
          style="display: inline-block; width: 240px; text-align: right">
-         BOTTOM = <span id="nBottom-value">…</span>
+         time utilization = <span id="sBottom-value">…</span>%
   </label>
-  <input type="range" min="0" max="100" id="nBottom">
+  <input type="range" min="1" max="100" step="0.1" id="sBottom">
 </p>
 
 <p>
-  <label for="nRight"
+  <label for="sRight"
          style="display: inline-block; width: 240px; text-align: right">
-         RIGHT = <span id="nRight-value">…</span>
+         space in GSF = <span id="sRight-value">…</span>
   </label>
-  <input type="range" min="0" max="100" id="nRight">
+  <input type="range" min="1" max="400" step="0.1" id="sRight">
 </p>
 
 <p>
-  <label for="nLeft"
+  <label for="sLeft"
          style="display: inline-block; width: 240px; text-align: right">
-         LEFT = <span id="nLeft-value">…</span>
+         person:GSF = <b>1:</b><span id="sLeft-value">…</span>
   </label>
-  <input type="range" min="0" max="100" id="nLeft">
+  <input type="range" min="1" max="200" step="0.1" id="sLeft">
 </p>
 
 <p style="display: inline-block; width: 240px; text-align: right">
-  WIDTH = <span id="width">…</span>
-  HEIGHT = <span id="height">…</span>
-</p>
+  people = <span id="width">…</span></p>
+<p style="display: inline-block; width: 240px; text-align: right">
+  work hours = <span id="height">…</span></p>
+<p style="display: inline-block; width: 240px; text-align: right">
+  people work hours = <span id="area">…</span></p>
 
 <form method="post">
-        <select id="ruleset">
-                <option value="0">all free</option>
-                <option value="1">constrain opposite</option>
-                <option value="2">constrain adjacent</option>
-                <option value="3">limited area</option>
-        </select>
+  <label for="ruleset" style="display: inline-block; width: 240px; text-align: right">
+  RULE =
+  </label>
+  <select id="ruleset">
+    <option value="0">all free</option>
+    <option value="1">link opposite sides</option>
+    <option value="2">link adjacent sides</option>
+  </select>
+</form>
+
+<form id="target"><br>
+  <label for="targetArea" style="display: inline-block; width: 240px; text-align: right">
+    TARGET:
+  </label>
+  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="fTargetArea">
+  <input type="button" value="SUBMIT" onClick="updateTarget(this.form)">
 </form>
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
-
-<script>
-// initial parameters for canvas and rectangle
-var width = 2000;
-var height = 1000;
-
-var posX = 300;
-var posY = 300;
-
-var rectWidth = 100;
-var rectHeight = 100;
-
-// create svg canvas
-var holder = d3.select("body")
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height);
-
-// draw a rectangle
-holder.append("rect")
-    .attr("x", posX)
-    .attr("y", posY)
-    .style("fill", "none")
-    .style("stroke", "blue")
-    .attr("height", rectWidth)
-    .attr("width", rectHeight);
-
-// read a change in the top input
-d3.select("#nTop").on("input", function() {
-  updateHeight(+this.value, Number(d3.select("#nBottom").property("value")));
-});
-
-// read a change in the bottom input
-d3.select("#nBottom").on("input", function() {
-  updateHeight(Number(d3.select("#nTop").property("value")), +this.value);
-});
-
-// read a change in the width input
-d3.select("#nRight").on("input", function() {
-  updateWidth(+this.value, Number(d3.select("#nLeft").property("value")));
-});
-
-// read a change in the width input
-d3.select("#nLeft").on("input", function() {
-  updateWidth(Number(d3.select("#nRight").property("value")), +this.value);
-});
-
-// update the values
-updateHeight(50, 0);
-updateWidth(0, 50);
-
-
-// Update the height attributes
-function updateHeight(nTop, nBottom) {
-
-  // calculate new height
-  var newHeight = rectHeight + nTop + nBottom;
-  var colorRatio = newHeight * Number(d3.select("rect").attr("width"))/90000;
-
-  // adjust the text on the range slider
-  d3.select("#nTop-value").text(nTop);
-  d3.select("#nTop").property("value", nTop);
-
-  d3.select("#nBottom-value").text(nBottom);
-  d3.select("#nBottom").property("value", nBottom);
-
-  d3.select("#height").text(newHeight);
-
-  // update the rectangle
-  holder.selectAll("rect")
-    .attr("y", posY-(nTop))
-    .attr("height", newHeight)
-    .style("fill", d3.hsl(colorRatio * 120, 1, 0.8));
-}
-
-
-// Update the width attributes
-function updateWidth(nRight, nLeft) {
-
-  // calculate new width
-  var newWidth = rectWidth + nRight + nLeft;
-  var colorRatio = newWidth * Number(d3.select("rect").attr("height"))/90000;
-
-  console.log(colorRatio);
-
-  // adjust the text on the range slider
-  d3.select("#nRight-value").text(nRight);
-  d3.select("#nRight").property("value", nRight);
-
-  d3.select("#nLeft-value").text(nLeft);
-  d3.select("#nLeft").property("value", nLeft);
-
-  d3.select("#width").text(newWidth);
-
-  // update the rectangle right edge
-  holder.selectAll("rect")
-    .attr("x", posX-(nLeft))
-    .attr("width", newWidth)
-    .style("fill", d3.hsl(colorRatio*120, 1, 0.8));
-}
-
-var sel=document.getElementById('Ruleset');
-console.log(sel.options[sel.selectedIndex].value)
-
-</script>
+<script src="script.js"></script>
