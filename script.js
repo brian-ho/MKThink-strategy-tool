@@ -40,46 +40,42 @@ var holder = d3.select("body")
     .attr("height", height);
 
 // create scales for the axis
-var xScale = d3.scale.linear()
+var xScale = d3.scaleLinear()
     .domain([0, maxRight])
     .range([0, maxRight]);
 
-var yScale = d3.scale.linear()
+var yScale = d3.scaleLinear()
     .domain([maxTop, 0])
     .range([-maxTop, 0]);
 
-var xScale2 = d3.scale.linear()
+var xScale2 = d3.scaleLinear()
     .domain([maxLeft, 0])
     .range([-maxLeft, 0]);
 
-var yScale2 = d3.scale.linear()
+var yScale2 = d3.scaleLinear()
     .domain([0, maxBottom/100])
     .range([0, maxBottom]);
 
 // create the generate axis functions
-var xAxis = d3.svg.axis()
+var xAxis = d3.axisBottom()
     .scale(xScale)
-    .orient("bottom")
     .tickValues([maxRight])
     .tickSize(1);
 
-var yAxis = d3.svg.axis()
+var yAxis = d3.axisLeft()
     .scale(yScale)
-    .orient("left")
     .tickValues([maxTop])
     .tickSize(1);
 
-var xAxis2 = d3.svg.axis()
+var xAxis2 = d3.axisBottom()
     .scale(xScale2)
-    .orient("bottom")
     .tickValues([maxLeft])
     .tickSize(1);
 
-var yAxis2 = d3.svg.axis()
+var yAxis2 = d3.axisLeft()
     .scale(yScale2)
-    .orient("left")
     .tickValues([1])
-    .tickFormat(d3.format("%"))
+    .tickFormat(d3.format(".0%"))
     .tickSize(1);
 
 // draw the axis by calling the axis function, each as its own group
