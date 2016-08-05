@@ -2,7 +2,7 @@
 <head>
   <meta charset="utf-8">
   <title>MKThink Strategy Tool</title>
-<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,700" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,700" rel="stylesheet">
   <style>
       body {
           font-family: 'Roboto Condensed', sans-serif;
@@ -49,20 +49,37 @@
   </style>
 </head>
 
+<form>
 <p>
   <label for="sTop"
          style="display: inline-block; width: 240px; text-align: right">
          hours per week = <span id="sTop-value">…</span>
   </label>
   <input type="range" min="1" max="168" step="0.1" id="sTop">
+  <label for="topMax" style="display: inline-block; width: 100px; text-align: right">
+  TOP MAX =
+  </label>
+  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="topMax" size="2">
+  <label for="topMin" style="display: inline-block; width: 100px; text-align: right">
+  MIN =
+  </label>
+  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="topMin">
 </p>
 
 <p>
   <label for="sBottom"
          style="display: inline-block; width: 240px; text-align: right">
-         time utilization = <span id="sBottom-value">…</span>%
+         time utilization = <span id="sBottom-value">…</span>
   </label>
-  <input type="range" min="1" max="100" step="0.1" id="sBottom">
+  <input type="range" min="1" max="100" step="0.001" id="sBottom">
+  <label for="bottomMax" style="display: inline-block; width: 100px; text-align: right">
+  BOTTOM MAX =
+  </label>
+  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="bottomMax">
+  <label for="bottomMin" style="display: inline-block; width: 100px; text-align: right">
+  MIN =
+  </label>
+  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="bottomMin">
 </p>
 
 <p>
@@ -71,6 +88,14 @@
          space in GSF = <span id="sRight-value">…</span>
   </label>
   <input type="range" min="1" max="400" step="0.1" id="sRight">
+  <label for="rightMax" style="display: inline-block; width: 100px; text-align: right">
+  RIGHT MAX =
+  </label>
+  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="rightMax">
+  <label for="rightMin" style="display: inline-block; width: 100px; text-align: right">
+  MIN =
+  </label>
+  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="rightMin">
 </p>
 
 <p>
@@ -78,8 +103,18 @@
          style="display: inline-block; width: 240px; text-align: right">
          person:GSF = <b>1:</b><span id="sLeft-value">…</span>
   </label>
-  <input type="range" min="1" max="200" step="0.1" id="sLeft">
+  <input type="range" min="1" max="200" step="0.01" id="sLeft">
+  <label for="leftMax" style="display: inline-block; width: 100px; text-align: right">
+  LEFT MAX =
+  </label>
+  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="leftMax">
+  <label for="leftMin" style="display: inline-block; width: 100px; text-align: right">
+  MIN =
+  </label>
+  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="leftMin">
+  <input type="button" value="UPDATE ALL" onClick="updateInputs(this.form)">
 </p>
+</form>
 
 <p style="display: inline-block; width: 240px; text-align: right">
   people = <span id="width">…</span></p>
@@ -95,17 +130,17 @@
   <select id="ruleset">
     <option value="0">all free</option>
     <option value="1">link opposite sides</option>
-    <option value="2">link adjacent sides</option>
+    <option value="2">link same types</option>
+    <option value="3">link different types</option>
   </select>
-</form>
-
-<form id="target"><br>
+  <br><br>
   <label for="targetArea" style="display: inline-block; width: 240px; text-align: right">
-    TARGET:
+  TARGET:
   </label>
   <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="fTargetArea">
-  <input type="button" value="SUBMIT" onClick="updateTarget(this.form)">
-</form>
+  <input type="button" value="UPDATE" onClick="updateTarget(this.form)">
+</form><br>
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 <script src="script.js"></script>
