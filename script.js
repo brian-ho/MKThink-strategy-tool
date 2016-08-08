@@ -9,8 +9,8 @@ var posY = 200;
 
 var rangeTopRight = 300
 var rangeTopLeft = 300
-var rangeBottomRight = 200
-var rangeBottomLeft = 200
+var rangeBottomRight = 180
+var rangeBottomLeft = 180
 
 var rule = 0;
 
