@@ -5,22 +5,27 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,700" rel="stylesheet">
   <style>
       body {
-          font-family: 'Roboto Condensed', sans-serif;
-          font-size: 14px;
-          font-weight: 300;
+        font-family: 'Roboto Condensed', sans-serif;
+        font-size: 14px;
+        font-weight: 300;
       }
-
       span {
         font-weight:700;
       }
-
       select {
         font-family: 'Roboto Condensed', sans-serif;
         font-style: italic;
         font-size: 14px;
         font-weight: 300;
       }
-
+      #pageTitle {
+        padding-top:5px;
+        font-size:33px;
+        width:100%;
+        border-bottom-style:solid;
+        border-bottom-color:#00394E;
+        border-bottom-width:3px;
+      }
       #fTargetArea {
         font-family: 'Roboto Condensed', sans-serif;
         font-style: italic;
@@ -28,94 +33,114 @@
         font-weight: 300;
         text-align: right;
       }
-
       input {
         font-family: 'Roboto Condensed', sans-serif;
         font-size: 14px;
         font-weight: 700;
       }
-
+      .variable {
+        width:300px;
+      }
+      .extent {
+        width:75px;
+      }
       .axis path,
       .axis line {
-          fill: none;
-          stroke: black;
-          shape-rendering: crispEdges;
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
       }
-
       .axis text {
-          font-family: sans-serif;
-          font-size: 11px;
+        font-family: sans-serif;
+        font-size: 11px;
+      }
+      .sectionHead {
+        padding-top:15px;
+        font-size:22px;
+        width:100%;
+        border-bottom-style:solid;
+        border-bottom-color:#00394E;
+        border-bottom-width:2px;
+      }
+      .sectionLine {
+        border-left-style:solid;
+        border-left-color:#3C9ACE;
+        border-left-width:3px;
+        line-height:30px;
       }
   </style>
 </head>
-
+<div id="pageTitle">
+  <label>Workplace Utilization and Occupancy Strategy Tool</label>
+</div>
+<div class="sectionHead">
+  <label>Variables</label>
+</div>
 <form>
 <p>
-  <label for="sTop"
+  <label for="sTop" class="sectionLine"
          style="display: inline-block; width: 240px; text-align: right">
-         hours per week = <span id="sTop-value">…</span>
+         workstation util. rate = <span id="sTop-value">…</span>
   </label>
-  <input type="range" min="1" max="168" step="0.1" id="sTop">
+  <input type="range" class="variable" step="0.001" id="sTop">
   <label for="topMax" style="display: inline-block; width: 100px; text-align: right">
-  TOP MAX =
+  MAX =
   </label>
-  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="topMax" size="2">
+  <input type="number" class="extent" name="targetArea" value="1.0" step = "1" min = "0" id="topMax" onChange="updateInputs(this.form)">
   <label for="topMin" style="display: inline-block; width: 100px; text-align: right">
   MIN =
   </label>
-  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="topMin">
+  <input type="number" class="extent" name="targetArea" value="1.0" step = "1" min = "0" id="topMin" onChange="updateInputs(this.form)">
 </p>
 
 <p>
-  <label for="sBottom"
+  <label for="sBottom" class="sectionLine"
          style="display: inline-block; width: 240px; text-align: right">
-         time utilization = <span id="sBottom-value">…</span>
+         staff effectiveness index = <span id="sBottom-value">…</span>
   </label>
-  <input type="range" min="1" max="100" step="0.001" id="sBottom">
+  <input type="range" class="variable" step="0.001" id="sBottom">
   <label for="bottomMax" style="display: inline-block; width: 100px; text-align: right">
-  BOTTOM MAX =
+  MAX =
   </label>
-  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="bottomMax">
+  <input type="number" class="extent" name="targetArea" value="1.0" step = "1" min = "0" id="bottomMax" onChange="updateInputs(this.form)">
   <label for="bottomMin" style="display: inline-block; width: 100px; text-align: right">
   MIN =
   </label>
-  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="bottomMin">
+  <input type="number" class="extent" name="targetArea" value="1.0" step = "1" min = "0" id="bottomMin" onChange="updateInputs(this.form)">
 </p>
 
 <p>
-  <label for="sRight"
+  <label for="sRight" class="sectionLine"
          style="display: inline-block; width: 240px; text-align: right">
-         space in GSF = <span id="sRight-value">…</span>
+         Office ASF = <span id="sRight-value">…</span>
   </label>
-  <input type="range" min="1" max="400" step="0.1" id="sRight">
+  <input type="range" class="variable" step="1" id="sRight">
   <label for="rightMax" style="display: inline-block; width: 100px; text-align: right">
-  RIGHT MAX =
+  MAX =
   </label>
-  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="rightMax">
+  <input type="number" class="extent" name="targetArea" value="1.0" step = "1" min = "0" id="rightMax" onChange="updateInputs(this.form)">
   <label for="rightMin" style="display: inline-block; width: 100px; text-align: right">
   MIN =
   </label>
-  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="rightMin">
+  <input type="number" class="extent" name="targetArea" value="1.0" step = "1" min = "0" id="rightMin" onChange="updateInputs(this.form)">
 </p>
 
 <p>
-  <label for="sLeft"
+  <label for="sLeft" class="sectionLine"
          style="display: inline-block; width: 240px; text-align: right">
-         person:GSF = <b>1:</b><span id="sLeft-value">…</span>
+         ASF/Workstation = <span id="sLeft-value">…</span>
   </label>
-  <input type="range" min="1" max="200" step="0.01" id="sLeft">
+  <input type="range" class="variable" step="1" id="sLeft">
   <label for="leftMax" style="display: inline-block; width: 100px; text-align: right">
-  LEFT MAX =
+  MAX =
   </label>
-  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="leftMax">
+  <input type="number" class="extent" name="targetArea" value="1.0" step = "1" min = "0" id="leftMax" onChange="updateInputs(this.form)">
   <label for="leftMin" style="display: inline-block; width: 100px; text-align: right">
   MIN =
   </label>
-  <input type="number" name="targetArea" value="1.0" step = "1" min = "0" id="leftMin">
-  <input type="button" value="UPDATE ALL" onClick="updateInputs(this.form)">
+  <input type="number" class="extent" name="targetArea" value="1.0" step = "1" min = "0" id="leftMin" onChange="updateInputs(this.form)">
 </p>
 </form>
-
 <p style="display: inline-block; width: 240px; text-align: right">
   people = <span id="width">…</span></p>
 <p style="display: inline-block; width: 240px; text-align: right">
