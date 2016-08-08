@@ -5,12 +5,12 @@ var width = 2000;
 var height = 1000;
 
 var posX = 600;
-var posY = 350;
+var posY = 200;
 
-var rangeTopRight = 425
-var rangeTopLeft = 425
-var rangeBottomRight = 250
-var rangeBottomLeft = 250
+var rangeTopRight = 300
+var rangeTopLeft = 300
+var rangeBottomRight = 200
+var rangeBottomLeft = 200
 
 var rule = 0;
 
