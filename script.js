@@ -5,30 +5,30 @@ var width = 2000;
 var height = 1000;
 
 var posX = 600;
-var posY = 200;
+var posY = 260;
 
-var rangeTopRight = 300
-var rangeTopLeft = 300
-var rangeBottomRight = 180
-var rangeBottomLeft = 180
+var rangeTop = 250
+var rangeBottom = 250
+var rangeRight = 425
+var rangeLeft = 425
 
 var rule = 0;
 
 // default values for controls, rectangle dimensions and calculated metrics
-var maxTop = 1;
+var maxTop = 100;
 var maxBottom = 1;
 var maxRight = 15000;
-var maxLeft = 200;
+var maxLeft = 300;
 
 var minTop = 0;
 var minBottom = 0;
 var minRight = 1;
-var minLeft = 20;
+var minLeft = 50;
 
-var nTop = .3;
-var nBottom = .8;
-var nRight = 4500;
-var nLeft = 100;
+var nTop = 30;
+var nBottom = .7;
+var nRight = 10000;
+var nLeft = 200;
 
 var target = (maxTop*(maxBottom)*(maxRight/maxLeft)).toFixed(0);
 
@@ -48,19 +48,19 @@ var holder = d3.select("body")
 // create scales for the axis
 var xScale = d3.scaleLinear()
     .domain([0, maxRight])
-    .range([0, rangeTopRight]);
+    .range([0, rangeRight]);
 
 var yScale = d3.scaleLinear()
     .domain([maxTop, 0])
-    .range([-rangeBottomLeft, 0]);
+    .range([-rangeTop, 0]);
 
 var xScale2 = d3.scaleLinear()
     .domain([minLeft, (maxLeft-minLeft)*1.33+minLeft])
-    .range([-rangeTopLeft, 0]);
+    .range([-rangeLeft, 0]);
 
 var yScale2 = d3.scaleLinear()
     .domain([0, maxBottom])
-    .range([0, rangeBottomRight]);
+    .range([0, rangeBottom]);
 
 // create the generate axis functions
 var xAxis = d3.axisBottom()
@@ -71,7 +71,7 @@ var xAxis = d3.axisBottom()
 var yAxis = d3.axisLeft()
     .scale(yScale)
     .tickValues([maxTop, (maxTop)*.75, (maxTop)*.5, (maxTop)*.25])
-    .tickFormat(d3.format(".0%"))
+    //.tickFormat(d3.format(".0%"))
     .tickSize(1);
 
 var xAxis2 = d3.axisBottom()
@@ -114,17 +114,29 @@ holder.append("g")
 holder.append("rect")
     .attr("id", "targetRect")
     .style("fill", "none")
-    .style("stroke", "black");
+    .style("stroke", "white");
+
+// create the dynamic rectangle
+holder.append("rect")
+    .attr("id", "originalRect")
+    .attr("x", posX+xScale2(nLeft))
+    .attr("y", posY+yScale(nTop))
+    .attr("width", xScale(nRight)-xScale2(nLeft))
+    .attr("height", yScale2(nBottom)-yScale(nTop))
+    .style("fill", "white")
+    .style("fill-opacity", 0.25)
+    .style("stroke", "grey")
+    .style("stroke-dasharray",4);
 
 // create the static limit rectangle based on max dimensions
 holder.append("rect")
     .attr("id", "limitRect")
-    .attr("x", posX - rangeTopLeft)
-    .attr("y", posY - rangeBottomRight)
+    .attr("x", posX - rangeLeft)
+    .attr("y", posY - rangeTop)
     .style("stroke", "grey")
     .style("fill", "none")
-    .attr("height", rangeBottomRight + rangeBottomLeft)
-    .attr("width", rangeTopRight + rangeTopLeft);
+    .attr("height", rangeBottom + rangeTop)
+    .attr("width", rangeRight + rangeLeft);
 
 // create edges
 holder.append("line")
@@ -151,6 +163,39 @@ holder.append("text")
       .attr("font-size", "20px")
       .attr("font-weight", "700")
       .attr("fill", "black");
+
+// create axis labesl
+holder.append("text")
+      .attr("class", "axis")
+      .attr("text-anchor", "middle")
+      .attr("x", posX + rangeRight - 40)
+      .attr("y", posY - 12)
+      .style("font-size", "14px")
+      .text("office GSF");
+
+  holder.append("text")
+        .attr("class", "axis")
+        .attr("text-anchor", "middle")
+        .attr("x", posX - rangeLeft + 40)
+        .attr("y", posY - 12)
+        .style("font-size", "14px")
+        .text("GSF/FTE");
+
+  holder.append("text")
+        .attr("class", "axis")
+        .attr("text-anchor", "middle")
+        .attr("x", posX + 40)
+        .attr("y", posY - rangeTop + 20)
+        .style("font-size", "14px")
+        .text("work hours");
+
+  holder.append("text")
+        .attr("class", "axis")
+        .attr("text-anchor", "middle")
+        .attr("x", posX + 60)
+        .attr("y", posY + rangeBottom - 15)
+        .style("font-size", "14px")
+        .text("staff effectiveness");
 
 // read a change to the drop down menu
 d3.select("#ruleset").on("change", function() {
@@ -495,7 +540,7 @@ function updateRect(duration){
   // setup transition
   var t = holder.transition().duration(duration);
   // setup transition to fade the edges back to original state (a bit of a hack)
-  var s = holder.transition().delay(100);
+  var s = holder.transition().delay(500);
 
   // redraw interactive rectangle with transition
   t.select("#targetRect")
@@ -505,13 +550,20 @@ function updateRect(duration){
     .attr("height", yScale2(nBottom)-yScale(nTop))
     .style("fill", function(d) {
       if (colorRatio >= 1){return "hsla(220, 100%, 60%, .9)"}
-      else {return "hsla(" + Math.floor(colorRatio * 200) + ", 70%, 70%, .9)"}});
+      else {return d3.interpolateCool(colorRatio)}})
+    .style("opacity", "0.8");
+      //else {return "hsla(" + Math.floor(colorRatio * 200) + ", 70%, 70%, .9)"}});
 
   // reposition text label
   t.select("#areaLabel")
         .attr("x", posX+xScale2(nLeft)+(xScale(nRight)-xScale2(nLeft))/2)
         .attr("y", posY+5+yScale(nTop)+(yScale2(nBottom)-yScale(nTop))/2)
-        .text(areaMetric.toFixed(2) + " Effective Work Hours");
+        .text(function(d) {
+            if (colorRatio>=1) { return areaMetric.toFixed(2) + " People Work Hours (above target)"}
+            else {return areaMetric.toFixed(2) + " People Work Hours"}})
+        .style("fill", function(d) {
+            if (colorRatio >= 1) {return "white"}
+            else {return "black"}});
 
   // move the lines
   t.select('#topEdge')
@@ -548,14 +600,14 @@ function updateRect(duration){
 
   // fade the lines back to original style
   s.selectAll('.edge')
-    .attr("style", "stroke:rgb(0,0,0); stroke-width:1");
+    .attr("style", "stroke:rgba(0,0,0,0); stroke-width:0");
 }
 
 
 // update the sliders
 function updateSliders() {
   // adjust the text in the range sliders
-  d3.select("#sTop-value").text(d3.format(".1%")(nTop));
+  d3.select("#sTop-value").text(nTop);
   d3.select("#sTop").property("value", nTop);
 
   d3.select("#sBottom-value").text(d3.format(".1%")(nBottom));
