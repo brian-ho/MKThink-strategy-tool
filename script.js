@@ -4,31 +4,33 @@
 var width = 2000;
 var height = 1000;
 
-var posX = 400;
-var posY = 350;
+var posX = 600;
+var posY = 200;
 
 var rangeTopRight = 300
-var rangeBottomLeft = 150
+var rangeTopLeft = 300
+var rangeBottomRight = 180
+var rangeBottomLeft = 180
 
 var rule = 0;
 
 // default values for controls, rectangle dimensions and calculated metrics
-var maxTop = 168;
+var maxTop = 1;
 var maxBottom = 1;
-var maxRight = 1000;
+var maxRight = 15000;
 var maxLeft = 200;
 
-var minTop = 1;
+var minTop = 0;
 var minBottom = 0;
 var minRight = 1;
-var minLeft = 1;
+var minLeft = 20;
 
-var nTop = 40;
-var nBottom = .5;
-var nRight = 500;
+var nTop = .3;
+var nBottom = .8;
+var nRight = 4500;
 var nLeft = 100;
 
-var target = maxTop*(maxBottom)*(maxRight/(201-maxLeft));
+var target = (maxTop*(maxBottom)*(maxRight/maxLeft)).toFixed(0);
 
 // create placeholder global variables to be filled by function updateMetrics()
 var yMetric;
@@ -50,35 +52,36 @@ var xScale = d3.scaleLinear()
 
 var yScale = d3.scaleLinear()
     .domain([maxTop, 0])
-    .range([-rangeTopRight, 0]);
+    .range([-rangeBottomLeft, 0]);
 
 var xScale2 = d3.scaleLinear()
-    .domain([maxLeft, 0])
-    .range([-rangeBottomLeft, 0]);
+    .domain([minLeft, (maxLeft-minLeft)*1.33+minLeft])
+    .range([-rangeTopLeft, 0]);
 
 var yScale2 = d3.scaleLinear()
     .domain([0, maxBottom])
-    .range([0, rangeBottomLeft]);
+    .range([0, rangeBottomRight]);
 
 // create the generate axis functions
 var xAxis = d3.axisBottom()
     .scale(xScale)
-    .tickValues([maxRight, (maxRight-minRight)*.75, (maxRight-minRight)*.5, (maxRight-minRight)*.25])
+    .tickValues([maxRight, (maxRight)*.75, (maxRight)*.5, (maxRight)*.25])
     .tickSize(1);
 
 var yAxis = d3.axisLeft()
     .scale(yScale)
-    .tickValues([maxTop, (maxTop-minTop)*.75, (maxTop-minTop)*.5, (maxTop-minTop)*.25])
+    .tickValues([maxTop, (maxTop)*.75, (maxTop)*.5, (maxTop)*.25])
+    .tickFormat(d3.format(".0%"))
     .tickSize(1);
 
 var xAxis2 = d3.axisBottom()
     .scale(xScale2)
-    .tickValues([maxLeft, (maxLeft-minLeft)*.75, (maxLeft-minLeft)*.5, (maxLeft-minLeft)*.25])
+    .tickValues([maxLeft,(maxLeft-minLeft)*.66+minLeft,(maxLeft-minLeft)*.33+minLeft,minLeft])
     .tickSize(1);
 
 var yAxis2 = d3.axisLeft()
     .scale(yScale2)
-    .tickValues([maxBottom, (maxBottom-minBottom)*.75, (maxBottom-minBottom)*.5, (maxBottom-minBottom)*.25])
+    .tickValues([maxBottom, (maxBottom)*.75, (maxBottom)*.5, (maxBottom)*.25])
     .tickFormat(d3.format(".0%"))
     .tickSize(1);
 
@@ -116,12 +119,12 @@ holder.append("rect")
 // create the static limit rectangle based on max dimensions
 holder.append("rect")
     .attr("id", "limitRect")
-    .attr("x", posX - rangeBottomLeft)
-    .attr("y", posY - rangeTopRight)
+    .attr("x", posX - rangeTopLeft)
+    .attr("y", posY - rangeBottomRight)
     .style("stroke", "grey")
     .style("fill", "none")
-    .attr("height", rangeTopRight + rangeBottomLeft)
-    .attr("width", rangeTopRight + rangeBottomLeft);
+    .attr("height", rangeBottomRight + rangeBottomLeft)
+    .attr("width", rangeTopRight + rangeTopLeft);
 
 // create edges
 holder.append("line")
@@ -306,17 +309,17 @@ function bottomLinkOpposite(valueBottom) {
 function rightLinkOpposite(valueRight) {
   // calculate and update values for controls and rectangle
   nRight = valueRight;
-  var calcLeft = 201-(nRight / xMetric);
+  var calcLeft = (nRight / xMetric);
 
   // check to make sure dyanmic rectangle does not cross axis
   if (calcLeft <= maxLeft && calcLeft >= minLeft) {nLeft = calcLeft}
   else if (calcLeft < minLeft) {
     nLeft = minLeft;
-    nRight = xMetric * (201-nLeft);
+    nRight = xMetric * (nLeft);
   }
   else if (calcLeft > maxLeft) {
     nLeft = maxLeft;
-    nRight = xMetric * (201-nLeft);
+    nRight = xMetric * (nLeft);
   }
 }
 
@@ -324,13 +327,13 @@ function rightLinkOpposite(valueRight) {
 function leftLinkOpposite(valueLeft) {
   // calculate and update values for controls and rectangle
   nLeft = valueLeft;
-  var calcRight = xMetric * (201-nLeft);
+  var calcRight = xMetric * (nLeft);
 
   // check to make sure dyanmic rectangle does not cross axis
   if (calcRight <= maxRight) {nRight = calcRight}
   else {
     nRight = maxRight;
-    nLeft = 201 - (nRight / xMetric);
+    nLeft = (nRight / xMetric);
   }
 }
 
@@ -338,7 +341,7 @@ function leftLinkOpposite(valueLeft) {
 function topRightLink(valueTop) {
   // calculate and update values for controls and rectangle
   nTop = valueTop;
-  var calcRight = (areaMetric * (201 - nLeft)) / (nTop * nBottom)
+  var calcRight = (areaMetric * (nLeft)) / (nTop * nBottom)
 
   if (calcRight <= maxRight) {
     nRight = calcRight;
@@ -346,7 +349,7 @@ function topRightLink(valueTop) {
 
   else {
     nRight = maxRight;
-    nTop = (areaMetric * (201 - nLeft)) / (nRight * nBottom);
+    nTop = (areaMetric * (nLeft)) / (nRight * nBottom);
   }
 }
 
@@ -354,7 +357,7 @@ function topRightLink(valueTop) {
 function rightTopLink(valueRight) {
   // calculate and update values for controls and rectangle
   nRight = valueRight;
-  var calcTop = (areaMetric * (201 - nLeft)) / (nRight * nBottom)
+  var calcTop = (areaMetric * (nLeft)) / (nRight * nBottom)
 
   if (calcTop <= maxTop) {
     nTop = calcTop;
@@ -362,7 +365,7 @@ function rightTopLink(valueRight) {
 
   else {
     nTop = maxTop;
-    nRight = (areaMetric * (201 - nLeft)) / (nTop * nBottom);
+    nRight = (areaMetric * (nLeft)) / (nTop * nBottom);
   }
 }
 
@@ -370,7 +373,7 @@ function rightTopLink(valueRight) {
 function bottomLeftLink(valueBottom) {
   // calculate and update values for controls and rectangle
   nBottom = valueBottom;
-  var calcLeft = 201 - ((nRight * nBottom * nTop) / areaMetric)
+  var calcLeft = ((nRight * nBottom * nTop) / areaMetric)
 
   if (calcLeft <= maxLeft && calcLeft >= minLeft) {
     nLeft = calcLeft;
@@ -378,12 +381,12 @@ function bottomLeftLink(valueBottom) {
 
   else if (calcLeft < minLeft) {
     nLeft = minLeft
-    nBottom = (areaMetric * (201 - nLeft)) / (nRight * nTop);
+    nBottom = (areaMetric * (nLeft)) / (nRight * nTop);
   }
 
   else if (calcLeft > maxLeft) {
     nLeft = maxLeft;
-    nBottom = (areaMetric * (201 - nLeft)) / (nRight * nTop);
+    nBottom = (areaMetric * (nLeft)) / (nRight * nTop);
   }
 }
 
@@ -391,7 +394,7 @@ function bottomLeftLink(valueBottom) {
 function leftBottomLink(valueLeft) {
   // calculate and update values for controls and rectangle
   nLeft = valueLeft;
-  var calcBottom = (areaMetric * (201 - nLeft)) / (nRight * nTop);
+  var calcBottom = (areaMetric * (nLeft)) / (nRight * nTop);
 
   if (calcBottom <= maxBottom) {
     nBottom = calcBottom;
@@ -399,14 +402,14 @@ function leftBottomLink(valueLeft) {
 
   else {
     nBottom = maxBottom;
-    nLeft = 201 - ((nRight * nBottom * nTop) / areaMetric);
+    nLeft = ((nRight * nBottom * nTop) / areaMetric);
   }
 }
 
 function topLeftLink(valueTop){
   // calculate and update values for controls and rectangle
   nTop = valueTop;
-  var calcLeft = 201 - ((nRight * nBottom * nTop) / areaMetric);
+  var calcLeft = ((nRight * nBottom * nTop) / areaMetric);
 
   if (calcLeft <= maxLeft && calcLeft >= minLeft) {
     nLeft = calcLeft;
@@ -414,19 +417,19 @@ function topLeftLink(valueTop){
 
   else if (calcLeft < minLeft) {
     nLeft = minLeft;
-    nTop = (areaMetric * (201 - nLeft)) / (nRight * nBottom);
+    nTop = (areaMetric * (nLeft)) / (nRight * nBottom);
   }
 
   else if (calcLeft > maxLeft) {
     nLeft = maxLeft;
-    nTop = (areaMetric * (201 - nLeft)) / (nRight * nBottom);
+    nTop = (areaMetric * (nLeft)) / (nRight * nBottom);
   }
 }
 
 function bottomRightLink(valueBottom){
   // calculate and update values for controls and rectangle
   nBottom = valueBottom;
-  var calcRight = (areaMetric * (201 - nLeft)) / (nTop * nBottom);
+  var calcRight = (areaMetric * (nLeft)) / (nTop * nBottom);
 
   if (calcRight <= maxRight && calcRight >= minRight) {
     nRight = calcRight;
@@ -434,19 +437,19 @@ function bottomRightLink(valueBottom){
 
   else if (calcRight < minRight) {
     nRight = minRight;
-    nBottom = (areaMetric * (201 - nLeft)) / (nRight * nTop);
+    nBottom = (areaMetric * (nLeft)) / (nRight * nTop);
   }
 
   else if (calcRight > maxRight) {
     nRight = maxRight;
-    nBottom = (areaMetric * (201 - nLeft)) / (nRight * nTop);
+    nBottom = (areaMetric * (nLeft)) / (nRight * nTop);
   }
 }
 
 function rightBottomLink(valueRight){
   // calculate and update values for controls and rectangle
   nRight = valueRight;
-  var calcBottom = (areaMetric * (201 - nLeft)) / (nRight * nTop);
+  var calcBottom = (areaMetric * (nLeft)) / (nRight * nTop);
 
   if (calcBottom <= maxBottom && calcBottom >= minBottom) {
     nBottom = calcBottom;
@@ -454,19 +457,19 @@ function rightBottomLink(valueRight){
 
   else if (calcBottom < minBottom) {
     nBottom = minBottom;
-    nRight = (areaMetric * (201 - nLeft)) / (nTop * nBottom);
+    nRight = (areaMetric * (nLeft)) / (nTop * nBottom);
   }
 
   else if (calcBottom > maxBottom) {
     nBottom = maxBottom;
-    nRight = (areaMetric * (201 - nLeft)) / (nTop * nBottom);
+    nRight = (areaMetric * (nLeft)) / (nTop * nBottom);
   }
 }
 
 function leftTopLink(valueLeft){
   // calculate and update values for controls and rectangle
   nLeft = valueLeft;
-  var calcTop = (areaMetric * (201 - nLeft)) / (nRight * nBottom);
+  var calcTop = (areaMetric * (nLeft)) / (nRight * nBottom);
 
   if (calcTop <= maxTop && calcTop >= minTop) {
     nTop = calcTop;
@@ -474,12 +477,12 @@ function leftTopLink(valueLeft){
 
   else if (calcTop < minTop) {
     nTop = minTop;
-    nLeft = 201 - ((nRight * nBottom * nTop) / areaMetric);
+    nLeft = ((nRight * nBottom * nTop) / areaMetric);
   }
 
   else if (calcTop > maxTop) {
     nTop = maxTop;
-    nLeft = 201 - ((nRight * nBottom * nTop) / areaMetric);
+    nLeft = ((nRight * nBottom * nTop) / areaMetric);
   }
 }
 
@@ -508,7 +511,7 @@ function updateRect(duration){
   t.select("#areaLabel")
         .attr("x", posX+xScale2(nLeft)+(xScale(nRight)-xScale2(nLeft))/2)
         .attr("y", posY+5+yScale(nTop)+(yScale2(nBottom)-yScale(nTop))/2)
-        .text(areaMetric.toFixed(2) + " PWH");
+        .text(areaMetric.toFixed(2) + " Effective Work Hours");
 
   // move the lines
   t.select('#topEdge')
@@ -552,7 +555,7 @@ function updateRect(duration){
 // update the sliders
 function updateSliders() {
   // adjust the text in the range sliders
-  d3.select("#sTop-value").text(nTop.toFixed(0));
+  d3.select("#sTop-value").text(d3.format(".1%")(nTop));
   d3.select("#sTop").property("value", nTop);
 
   d3.select("#sBottom-value").text(d3.format(".1%")(nBottom));
@@ -561,7 +564,7 @@ function updateSliders() {
   d3.select("#sRight-value").text(nRight.toFixed(0));
   d3.select("#sRight").property("value", nRight);
 
-  d3.select("#sLeft-value").text(201-nLeft.toFixed(0));
+  d3.select("#sLeft-value").text(nLeft.toFixed(0));
   d3.select("#sLeft").property("value", nLeft);
 
   d3.select("#height").text(yMetric.toFixed(2));
@@ -603,7 +606,7 @@ function updateInputs(form) {
   minRight = Number(form.rightMin.value);
   minLeft = Number(form.leftMin.value);
 
-  target = maxTop*(maxBottom)*(maxRight/(201-maxLeft));
+  target = maxTop*(maxBottom)*(maxRight/(maxLeft));
   d3.select('#fTargetArea').property("value", target.toFixed(0))
 
   // scale the global dynamic variables to their static screen position
@@ -638,13 +641,13 @@ function updateAxis(time){
   // adjust the domains only of the four scales, keeping range constant
   xScale.domain([0, maxRight]);
   yScale.domain([maxTop, 0]);
-  xScale2.domain([maxLeft, 0]);
+  xScale2.domain([minLeft, (maxLeft-minLeft)*1.33+minLeft])
   yScale2.domain([0, maxBottom]);
 
   // update the axis tick values
   xAxis.tickValues([maxRight, (maxRight-minRight)*.75, (maxRight-minRight)*.5, (maxRight-minRight)*.25]);
   yAxis.tickValues([maxTop, (maxTop-minTop)*.75, (maxTop-minTop)*.5, (maxTop-minTop)*.25]);
-  xAxis2.tickValues([maxLeft, (maxLeft-minLeft)*.75, (maxLeft-minLeft)*.5, (maxLeft-minLeft)*.25]);
+  xAxis2.tickValues([maxLeft,(maxLeft-minLeft)*.66+minLeft,(maxLeft-minLeft)*.33+minLeft,minLeft]);
   yAxis2.tickValues([maxBottom, (maxBottom-minBottom)*.75, (maxBottom-minBottom)*.5, (maxBottom-minBottom)*.25]);
 
   // create transition function (variable)
@@ -704,7 +707,7 @@ function updateInputFields(){
 
 function updateMetrics(){
   yMetric = nTop*(nBottom);
-  xMetric = nRight/(201-nLeft);
+  xMetric = nRight/(nLeft);
   areaMetric = xMetric * yMetric;
 }
 
