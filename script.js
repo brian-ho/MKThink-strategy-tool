@@ -607,7 +607,7 @@ function updateRect(duration){
 // update the sliders
 function updateSliders() {
   // adjust the text in the range sliders
-  d3.select("#sTop-value").text(nTop);
+  d3.select("#sTop-value").text(nTop.toFixed(1));
   d3.select("#sTop").property("value", nTop);
 
   d3.select("#sBottom-value").text(d3.format(".1%")(nBottom));
