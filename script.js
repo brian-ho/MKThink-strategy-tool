@@ -82,7 +82,7 @@ var xAxis2 = d3.axisBottom()
 var yAxis2 = d3.axisLeft()
     .scale(yScale2)
     .tickValues([maxBottom, (maxBottom)*.75, (maxBottom)*.5, (maxBottom)*.25])
-    .tickFormat(d3.format(".0%"))
+    .tickFormat(d3.format(".0%"+":1"))
     .tickSize(1);
 
 // draw the axis by calling the axis function, each as its own group
