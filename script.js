@@ -616,7 +616,7 @@ function updateSliders() {
   d3.select("#sRight-value").text(nRight.toFixed(0));
   d3.select("#sRight").property("value", nRight);
 
-  d3.select("#sLeft-value").text(nLeft.toFixed(0));
+  d3.select("#sLeft-value").text(nLeft.toFixed(0) + ":1");
   d3.select("#sLeft").property("value", nLeft);
 
   d3.select("#height").text(yMetric.toFixed(2));
