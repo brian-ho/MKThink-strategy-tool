@@ -7,8 +7,8 @@ var height = 1000;
 var posX = 600;
 var posY = 225;
 
-var rangeTop = 200
-var rangeBottom = 200
+var rangeTop = 175
+var rangeBottom = 175
 var rangeRight = 425
 var rangeLeft = 425
 
