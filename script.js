@@ -4,7 +4,7 @@
 var width = 2000;
 var height = 1000;
 
-var posX = 600;
+var posX = 550;
 var posY = 260;
 
 var rangeTop = 200
